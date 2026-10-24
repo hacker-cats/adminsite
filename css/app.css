@@ -157,19 +157,31 @@ p { margin: 0; max-width: var(--measure-body); }
   margin: 0 var(--lift) var(--lift) 0; /* room for the drop */
 }
 .btn:hover { color: var(--label); }
-.btn:active {
+/* Hover-press (design kit rule): hovering shows the pressed position — the
+   face travels into the page and the bevel flips. Hover only applies to real
+   mouse pointers so a tap on a phone doesn't leave a button stuck down. */
+.btn:not([disabled]):active {
   transform: translate(var(--lift-travel), var(--lift-travel));
   box-shadow:
-    inset var(--bevel) var(--bevel) 0 var(--hi),
-    inset calc(var(--bevel) * -1) calc(var(--bevel) * -1) 0 var(--lo),
+    inset calc(var(--bevel) * -1) calc(var(--bevel) * -1) 0 var(--hi),
+    inset var(--bevel) var(--bevel) 0 var(--lo),
     var(--lift-press) var(--lift-press) 0 var(--hc-ink);
+}
+@media (hover: hover) and (pointer: fine) {
+  .btn:not([disabled]):hover {
+    transform: translate(var(--lift-travel), var(--lift-travel));
+    box-shadow:
+      inset calc(var(--bevel) * -1) calc(var(--bevel) * -1) 0 var(--hi),
+      inset var(--bevel) var(--bevel) 0 var(--lo),
+      var(--lift-press) var(--lift-press) 0 var(--hc-ink);
+  }
 }
 .btn:focus-visible { outline: 3px solid var(--hc-ink); outline-offset: 3px; }
 .btn[disabled] { opacity: 0.5; cursor: not-allowed; }
 .btn--ink { --face: var(--hc-ink); --hi: var(--hc-ink-tex); --lo: oklch(0.18 0.03 58); --label: var(--hc-cream); }
 .btn--plain { --face: var(--hc-raised); --hi: var(--hc-field); --lo: var(--hc-line); --label: var(--hc-ink); }
 .btn--danger { --face: var(--hc-oxide); --hi: var(--hc-oxide-hi); --lo: var(--hc-oxide-lo); --label: var(--text-on-oxide); }
-.btn--sm { min-height: 34px; padding: 0 var(--space-3); font-size: var(--size-label); --lift: 4px; --lift-travel: 3px; --bevel: 2px; }
+.btn--sm { min-height: 34px; padding: 0 var(--space-3); font-size: var(--size-label); --lift: 4px; --lift-travel: 3px; --lift-press: 1px; --bevel: 2px; }
 .btn img { width: 16px; height: 16px; image-rendering: pixelated; }
 
 /* ---------- fields: they sink ---------- */
@@ -308,6 +320,8 @@ tr.is-now td { background: var(--hc-field); }
   color: var(--text-body);
   margin-bottom: -2px;
 }
+.tabs button { transition: background var(--dur-control); }
+.tabs button:hover { background: var(--surface-card); }
 .tabs button[aria-selected="true"] { background: var(--surface-card); border-color: var(--border-strong); }
 
 /* ---------- toast ---------- */
