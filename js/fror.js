@@ -5,7 +5,7 @@
  */
 (function () {
   "use strict";
-  const { $, esc, icon, param, today, daysBetween, fmtDate, fmtTime, location: loc, cateringRules, toast, copyText, eventOptions, parseDate, DOW } = window.App;
+  const { $, esc, icon, alert, param, today, daysBetween, fmtDate, fmtTime, location: loc, cateringRules, toast, copyText, eventOptions, parseDate, DOW } = window.App;
   const content = $("#content");
   const cat = CONFIG.catering;
   const draftKey = (id) => "hc-admin-fror-draft:" + id;
@@ -72,13 +72,12 @@
   function alerts(e) {
     const r = cateringRules(e);
     const out = [];
-    const a = (k, i, m) => out.push(`<div class="alert alert--${k}">${icon(i)}<div>${m}</div></div>`);
-
-    if (!e.hasFood) a("info", "info", "This event isn't serving food, so no First Right of Refusal email is needed.");
-    else if (!e.vendor) a("caution", "warning", `No vendor set. <a href="event.html?id=${encodeURIComponent(e.id)}">Add the vendor</a> first.`);
-    if (r.exempt) a("ok", "check", `<strong>${esc(e.vendor)}</strong> orders are exempt from the First Right of Refusal. You can order directly; no email needed.`);
-    if (r.overLimit) a("danger", "warning", `<strong>${esc(e.attendance)} people expected.</strong> For groups of ${cat.attendanceLimit} or more, University Catering needs to cater the event itself, so an outside vendor isn't an option. Contact Catering about catering it, or lower the expected headcount if it was overestimated.`);
-    if (e.hasFood) r.buildingWarnings.forEach((w) => a("caution", "warning", esc(w)));
+    const q = encodeURIComponent(e.id);
+    if (!e.hasFood) out.push(alert("info", "No food, no email", "This event isn't serving food, so you don't need a first right of refusal."));
+    else if (!e.vendor) out.push(alert("warning", "No vendor set", `<a href="event.html?id=${q}">Add the vendor</a> to see whether you need this email.`));
+    if (r.exempt) out.push(alert("info", "No catering email needed", `${esc(e.vendor)} orders are exempt from the first right of refusal. You can order directly.`));
+    if (r.overLimit) out.push(alert("danger", `${esc(e.attendance)} people expected`, `For groups of ${cat.attendanceLimit} or more, University Catering has to cater the event, so an outside vendor isn't an option. Contact Catering about catering it, or <a href="event.html?id=${q}">fix the headcount</a> if it was overestimated.`));
+    if (e.hasFood) r.buildingWarnings.forEach((w) => out.push(alert("warning", "This building has its own food rules", esc(w))));
     return { html: out.join(""), show: r.needsFror };
   }
 
@@ -86,10 +85,10 @@
     const dow = new Date().getDay();
     const days = daysBetween(today(), e.date);
     let msg = esc(cat.sendReminder);
-    if (dow === 0 || dow >= 5) msg += ` <strong>Today is ${DOW[dow]}</strong>, so Catering probably won't see this until Monday.`;
-    if (days >= 0) msg += ` The event is <strong>${days} day${days === 1 ? "" : "s"}</strong> away (${esc(DOW[parseDate(e.date).getDay()])}).`;
-    else msg += " <strong>This event has already happened.</strong>";
-    return `<div class="alert alert--${days < 7 ? "caution" : "info"}">${icon("clock")}<div>${msg}</div></div>`;
+    if (dow === 0 || dow >= 5) msg += ` Today is ${DOW[dow]}, so Catering probably won't see it until Monday.`;
+    const title = days < 0 ? "This event has already happened"
+      : `The event is ${days === 0 ? "today" : days === 1 ? "tomorrow" : `in ${days} days`} (${DOW[parseDate(e.date).getDay()]})`;
+    return alert(days < 7 ? "warning" : "info", title, msg);
   }
 
   /* ---------- render ---------- */
@@ -97,38 +96,39 @@
     const rules = alerts(ev);
     const d = loadDraft(ev);
     content.innerHTML = `
-      <label class="field"><span>Event</span><select id="ev">${eventOptions(events, ev.id)}</select></label>
+      <div class="field" style="max-width: 560px">
+        <label for="ev">Event</label>
+        <select id="ev">${eventOptions(events, ev.id)}</select>
+      </div>
       ${rules.html}
       ${rules.show ? `
         ${timing(ev)}
-        <div class="card">
-          <div class="card__bar"><span>Email preview: edit anything</span><span>${icon("mail")}</span></div>
-          <div class="card__body">
-            ${d.stale ? `<div class="alert alert--caution">${icon("refresh")}<div>The event details changed since you last edited this email. Click <strong>Reset from template</strong> to refill it (your edits will be replaced).</div></div>` : ""}
-            <label class="field"><span>To</span><input id="to" value="${esc(cat.email)}" readonly></label>
-            <label class="field"><span>Subject</span><input id="subject" value="${esc(d.subject)}"></label>
-            <label class="field"><span>Message</span><textarea id="body" rows="22">${esc(d.body)}</textarea></label>
-            <div class="row">
-              <a class="btn" id="outlook" target="_blank" rel="noopener">${icon("mail")} Open in Outlook (MSU)</a>
-              <a class="btn btn--plain" id="gmail" target="_blank" rel="noopener">Open in Gmail</a>
-              <a class="btn btn--plain" id="mailto">Mail app</a>
-              <button class="btn btn--plain" id="copy">${icon("copy")} Copy message</button>
-              <button class="btn btn--plain" id="copy-subject">Copy subject</button>
-              <button class="btn btn--plain" id="reset">${icon("refresh")} Reset from template</button>
-            </div>
-            <p class="muted">These buttons only open a draft; you review it and press Send yourself. Edit the default wording in <code>config.js</code> → <code>frorEmail</code>.</p>
+        <section class="card" aria-labelledby="mail-h" style="max-width: 880px">
+          <div class="card__head"><h2 id="mail-h" style="font-size: var(--web-size-h3)">Email</h2><span class="meta">Edit anything before you open it</span></div>
+          ${d.stale ? alert("warning", "The event changed since you edited this email", "Select <strong>Reset to template</strong> to refill it. Your edits will be replaced.") : ""}
+          <div class="field"><label for="to">To</label><input id="to" value="${esc(cat.email)}" readonly></div>
+          <div class="field"><label for="subject">Subject</label><input id="subject" value="${esc(d.subject)}"></div>
+          <div class="field"><label for="body">Message</label><textarea id="body" rows="20">${esc(d.body)}</textarea></div>
+          <div class="row">
+            <a class="btn" id="outlook" target="_blank" rel="noopener">${icon("mail", "onDark")} Open in Outlook<span class="sr-only"> (opens in a new tab)</span></a>
+            <a class="btn btn--secondary" id="gmail" target="_blank" rel="noopener">Open in Gmail<span class="sr-only"> (opens in a new tab)</span></a>
+            <a class="btn btn--secondary" id="mailto">Open in mail app</a>
           </div>
-        </div>
-        <div class="card">
-          <div class="card__bar"><span>Status</span></div>
-          <div class="card__body">
-            <div class="row">
-              <label class="check"><input type="checkbox" id="st-frorSent"${ev.frorSent ? " checked" : ""}> I sent the FRoR email</label>
-              <label class="check"><input type="checkbox" id="st-approvalReceived"${ev.approvalReceived ? " checked" : ""}> Catering replied / approval received</label>
-              <label class="check"><input type="checkbox" id="st-foodOrdered"${ev.foodOrdered ? " checked" : ""}> Food ordered</label>
-            </div>
+          <div class="row">
+            <button class="btn btn--ghost btn--sm" id="copy">Copy message</button>
+            <button class="btn btn--ghost btn--sm" id="copy-subject">Copy subject</button>
+            <button class="btn btn--ghost btn--sm" id="reset">Reset to template</button>
           </div>
-        </div>` : ""}`;
+          <p class="small muted">MSU student email is Outlook. These buttons open a draft; you review it and press Send yourself. The default wording lives in <code>config.js</code> under <code>frorEmail</code>.</p>
+        </section>
+        <fieldset style="max-width: 880px">
+          <legend>Status</legend>
+          <div class="choices">
+            <label class="check"><input type="checkbox" id="st-frorSent"${ev.frorSent ? " checked" : ""}> Catering email sent</label>
+            <label class="check"><input type="checkbox" id="st-approvalReceived"${ev.approvalReceived ? " checked" : ""}> Catering replied, OK to order</label>
+            <label class="check"><input type="checkbox" id="st-foodOrdered"${ev.foodOrdered ? " checked" : ""}> Food ordered</label>
+          </div>
+        </fieldset>` : ""}`;
 
     $("#ev").onchange = (e) => {
       ev = events.find((x) => x.id === e.target.value);
@@ -164,7 +164,7 @@
         try {
           ev = await Store.patch("events", ev.id, { [key]: cb.checked });
           events = events.map((x) => (x.id === ev.id ? ev : x));
-          toast("Status saved");
+          toast("Saved.");
         } catch (e) { cb.checked = !cb.checked; toast(e.message, "danger"); }
       };
     }
@@ -173,7 +173,7 @@
   App.withData(content, async () => {
     events = await Store.list("events");
     if (!events.length) {
-      content.innerHTML = `<div class="empty">No events yet. <a href="event.html">Create one</a> first.</div>`;
+      content.innerHTML = `<div class="empty"><p>No events yet. <a href="event.html">Create one</a> first.</p></div>`;
       return;
     }
     const t = today();

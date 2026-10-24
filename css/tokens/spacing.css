@@ -21,6 +21,6 @@
   --page-max: 1280px;
   --sidebar-w: 240px;
 
-  --radius: 0;              /* sharp corners, always */
+  --radius: 0;              /* print & merch: sharp corners. Web uses --web-radius (4px). */
   --hit-min: 44px;
 }

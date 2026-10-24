@@ -191,7 +191,7 @@
       if (i === 35 && !inMonth) break; // drop a trailing all-next-month row
       const list = (byDate[d] || []).sort((a, b) => order[a.kind] - order[b.kind] || String(a.time).localeCompare(String(b.time)));
       const cls = ["cal__day", inMonth ? "" : "is-other", d === t ? "is-today" : "", breakOn(d) ? "is-break" : ""].join(" ");
-      cells += `<div class="${cls}"><span class="cal__num">${parseDate(d).getDate()}</span>` +
+      cells += `<div class="${cls}"><span class="cal__num"><span aria-hidden="true">${parseDate(d).getDate()}</span><span class="sr-only">${parseDate(d).toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}${d === t ? " (today)" : ""}</span></span>` +
         list.map((it) => {
           const tag = it.href ? "a" : "span";
           return `<${tag} class="cal__item cal__item--${it.kind}"${it.href ? ` href="${esc(it.href)}"` : ""} title="${esc(it.title || it.label)}">${esc(it.label)}</${tag}>`;
@@ -200,15 +200,15 @@
     el.innerHTML = `
       <div class="cal">
         <div class="cal__head">
-          <button class="btn btn--sm btn--plain" data-nav="-1" aria-label="Previous month">&larr;</button>
-          <span class="cal__title">${first.toLocaleDateString("en-US", { month: "long", year: "numeric" })}</span>
+          <h2 class="cal__title" aria-live="polite">${first.toLocaleDateString("en-US", { month: "long", year: "numeric" })}</h2>
           <div class="row">
-            <button class="btn btn--sm btn--plain" data-nav="0">today</button>
-            <button class="btn btn--sm btn--plain" data-nav="1" aria-label="Next month">&rarr;</button>
+            <button class="btn btn--secondary btn--sm" data-nav="-1">${App.icon("left")} Previous</button>
+            <button class="btn btn--secondary btn--sm" data-nav="0">Today</button>
+            <button class="btn btn--secondary btn--sm" data-nav="1">Next ${App.icon("right")}</button>
           </div>
         </div>
         <div class="cal__grid">
-          ${["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => `<div class="cal__dow">${d}</div>`).join("")}
+          ${["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => `<div class="cal__dow" aria-hidden="true">${d}</div>`).join("")}
           ${cells}
         </div>
       </div>`;

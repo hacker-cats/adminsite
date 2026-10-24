@@ -147,46 +147,58 @@
   function renderControls() {
     content.innerHTML = `
       <div class="poster-layout">
-        <div class="stack">
-          <label class="field"><span>Event</span><select id="ev">${eventOptions(events, ev.id)}</select></label>
-          <div class="field"><span>Template</span>
-            <div class="tpl-pick">${TEMPLATES.map((t) => `<label><input type="radio" name="tpl" value="${t.id}"${t.id === s.template ? " checked" : ""}> ${esc(t.name)}</label>`).join("")}</div>
+        <form class="stack" style="gap: 22px" onsubmit="return false">
+          <div class="field">
+            <label for="ev">Event</label>
+            <select id="ev">${eventOptions(events, ev.id)}</select>
           </div>
-          <label class="field"><span>Club name</span><input id="club" value="${esc(s.club)}"></label>
-          <label class="field"><span>Footer tagline</span><input id="tagline" value="${esc(s.tagline)}"></label>
-          <div class="field"><span>Colors</span>
-            <div class="row">
-              <label class="check"><input type="color" id="c-bg" value="${s.colors.bg}"> background</label>
-              <label class="check"><input type="color" id="c-accent" value="${s.colors.accent}"> accent</label>
-              <label class="check"><input type="color" id="c-text" value="${s.colors.text}"> text</label>
-              <button class="btn btn--sm btn--plain" id="reset-colors" type="button">reset</button>
+          <div class="field">
+            <span class="label" id="tpl-label">Template</span>
+            <div class="segmented" role="group" aria-labelledby="tpl-label">
+              ${TEMPLATES.map((t) => `<button type="button" data-tpl="${t.id}" aria-pressed="${t.id === s.template}">${esc(t.name)}</button>`).join("")}
             </div>
           </div>
-          <div class="field"><span>Logo</span>
-            <div class="row">
-              <input type="file" id="logo" accept="image/*">
-              <button class="btn btn--sm btn--plain" id="clear-logo" type="button">use default</button>
-            </div>
+          <div class="form-grid">
+            <div class="field"><label for="club">Club name</label><input id="club" value="${esc(s.club)}"></div>
+            <div class="field"><label for="tagline">Footer line</label><input id="tagline" value="${esc(s.tagline)}"></div>
           </div>
-          <div class="row">
+          <fieldset class="quiet">
+            <legend style="font-size: 16px; padding: 0">Colours</legend>
+            <div class="row">
+              <label class="check"><input type="color" id="c-bg" value="${s.colors.bg}"> Background</label>
+              <label class="check"><input type="color" id="c-accent" value="${s.colors.accent}"> Accent</label>
+              <label class="check"><input type="color" id="c-text" value="${s.colors.text}"> Text</label>
+              <button class="btn btn--ghost btn--sm" id="reset-colors" type="button">Reset colours</button>
+            </div>
+          </fieldset>
+          <div class="field">
+            <span class="label">Logo</span>
+            <div class="row">
+              <label class="btn btn--secondary btn--sm">${icon("upload")} Upload logo<input type="file" id="logo" accept="image/*" class="sr-only"></label>
+              <button class="btn btn--ghost btn--sm" id="clear-logo" type="button">Use the pixel cat</button>
+            </div>
+            <p class="field__note">PNG or SVG with a transparent background works best.</p>
+          </div>
+          <div class="choices">
             <label class="check"><input type="checkbox" id="show-food"${s.showFood ? " checked" : ""}> Show food line</label>
             <label class="check"><input type="checkbox" id="show-contact"${s.showContact ? " checked" : ""}> Show organizer contact</label>
           </div>
-          <div class="row">
-            <button class="btn" id="png">${icon("download")} PNG</button>
-            <button class="btn" id="pdf">${icon("file")} PDF (letter)</button>
-            <button class="btn btn--plain" id="print">${icon("print")} Print</button>
+          <div class="row" style="border-top: 1px solid var(--web-line); padding-top: 20px">
+            <button class="btn" type="button" id="pdf">${icon("download", "onDark")} Download PDF</button>
+            <button class="btn btn--secondary" type="button" id="png">Download PNG</button>
+            <button class="btn btn--ghost" type="button" id="print">Print</button>
           </div>
-          <div class="row" id="made-row"></div>
-        </div>
-        <div class="poster-stage"><div id="stage-inner" class="poster-stage__inner"></div></div>
+          <div id="made-row"></div>
+        </form>
+        <div class="poster-stage" role="img" aria-label="Poster preview"><div id="stage-inner" class="poster-stage__inner"></div></div>
       </div>`;
 
     const rerender = () => { saveSettings(); renderPoster(); };
     $("#ev").onchange = (e) => { ev = events.find((x) => x.id === e.target.value); history.replaceState(null, "", "?id=" + encodeURIComponent(ev.id)); renderMadeRow(); renderPoster(); };
-    $$("input[name=tpl]").forEach((r) => (r.onchange = () => {
-      s.template = r.value;
-      s.colors = { ...TEMPLATES.find((t) => t.id === r.value).colors };
+    $$("[data-tpl]").forEach((b) => (b.onclick = () => {
+      s.template = b.dataset.tpl;
+      $$("[data-tpl]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+      s.colors = { ...TEMPLATES.find((t) => t.id === s.template).colors };
       ["bg", "accent", "text"].forEach((k) => ($("#c-" + k).value = s.colors[k]));
       rerender();
     }));
@@ -215,15 +227,15 @@
 
   function renderMadeRow() {
     $("#made-row").innerHTML = ev.posterMade
-      ? `<span class="chip chip--live">poster marked as made</span>`
-      : `<button class="btn btn--sm btn--ink" id="mark-made">${icon("check")} Mark “poster made”</button>`;
+      ? `<p class="small muted">${icon("check")} This event's poster is marked as made.</p>`
+      : `<button class="btn btn--ghost btn--sm" type="button" id="mark-made">Mark the poster as made</button>`;
     const b = $("#mark-made");
     if (b) b.onclick = async () => {
       try {
         ev = await Store.patch("events", ev.id, { posterMade: true });
         events = events.map((x) => (x.id === ev.id ? ev : x));
         renderMadeRow();
-        toast("Status updated");
+        toast("Saved.");
       } catch (e) { toast(e.message, "danger"); }
     };
   }
@@ -233,7 +245,7 @@
   App.withData(content, async () => {
     events = await Store.list("events");
     if (!events.length) {
-      content.innerHTML = `<div class="empty">No events yet. <a href="event.html">Create one</a> first.</div>`;
+      content.innerHTML = `<div class="empty"><p>No events yet. <a href="event.html">Create one</a> first.</p></div>`;
       return;
     }
     const t = today();

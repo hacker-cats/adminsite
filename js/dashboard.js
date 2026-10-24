@@ -4,65 +4,72 @@
  */
 (function () {
   "use strict";
-  const { $, $$, esc, icon, today, daysBetween, fmtDate, fmtTimeRange, location: loc, cateringRules, statusItems, toast, download } = window.App;
+  const { $, $$, esc, icon, alert, badge, today, daysBetween, parseDate, fmtDate, fmtTimeRange, location: loc, cateringRules, statusItems, toast, download } = window.App;
   const content = $("#content");
   let events = [];
+
+  const when = (days) => (days === 0 ? "Today" : days === 1 ? "Tomorrow" : days > 0 ? `In ${days} days` : `${-days} days ago`);
 
   function eventCard(ev) {
     const items = statusItems(ev);
     const done = items.filter((i) => i.done).length;
     const rules = cateringRules(ev);
     const days = daysBetween(today(), ev.date);
+    const d = parseDate(ev.date);
     const q = "?id=" + encodeURIComponent(ev.id);
+    const headId = "ev-" + ev.id;
 
     const alerts = [];
-    if (rules.overLimit) alerts.push(`<div class="alert alert--danger">${icon("warning")}<div>${esc(ev.attendance)} expected — University Catering must cater groups of ${CONFIG.catering.attendanceLimit}+.</div></div>`);
-    if (rules.needsFror && !ev.frorSent && days >= 0) alerts.push(`<div class="alert alert--caution">${icon("mail")}<div>Catering FRoR email not sent yet.</div></div>`);
+    if (rules.overLimit) alerts.push(alert("danger", `${esc(ev.attendance)} people expected`, `University Catering must cater groups of ${CONFIG.catering.attendanceLimit} or more.`));
+    else if (rules.needsFror && !ev.frorSent && days >= 0) alerts.push(alert("warning", "Catering email not sent", "Ask University Catering before ordering from an outside vendor."));
 
     return `
-      <article class="card event-card">
-        <div class="card__bar">
-          <span class="date">${esc(fmtDate(ev.date, "short"))} · ${esc(fmtTimeRange(ev.startTime, ev.endTime))}</span>
-          <span>${days === 0 ? "today" : days > 0 ? `in ${days} day${days === 1 ? "" : "s"}` : `${-days} days ago`}</span>
-        </div>
-        <div class="card__body">
-          <h2>${esc(ev.title)}</h2>
-          <dl class="meta">
-            <dt>Where</dt><dd>${esc(loc(ev)) || "—"}</dd>
-            <dt>Expected</dt><dd>${esc(ev.attendance) || "—"} people</dd>
-            <dt>Food</dt><dd>${ev.hasFood ? esc(ev.vendor || "yes (vendor not set)") : "none"}${rules.exempt ? ' <span class="chip">FRoR exempt</span>' : ""}</dd>
-            <dt>Organizer</dt><dd>${esc(ev.organizerName) || "—"}${ev.organizerRole ? ", " + esc(ev.organizerRole) : ""}</dd>
-          </dl>
-          ${alerts.join("")}
-          <div class="stack" style="gap: var(--space-2)">
-            <div class="row" style="justify-content: space-between">
-              <span class="label">Status</span><span class="mono">${done}/${items.length}</span>
+      <li class="card" aria-labelledby="${esc(headId)}">
+        <div class="event-head">
+          <div class="date-block" aria-hidden="true">
+            <div class="dow">${d.toLocaleDateString("en-US", { month: "short" })}</div>
+            <div class="day">${d.getDate()}</div>
+          </div>
+          <div>
+            <div class="row row--between" style="gap: 4px 12px">
+              <h3 id="${esc(headId)}">${esc(ev.title)}</h3>
+              ${badge(when(days), days <= 7 ? "signal" : "neutral")}
             </div>
-            <div class="progress" aria-hidden="true"><div style="width:${items.length ? (done / items.length) * 100 : 0}%"></div></div>
-            <ul class="checklist">
-              ${items.map((i) => `<li><label class="${i.done ? "done" : ""}"><input type="checkbox" data-id="${esc(ev.id)}" data-key="${i.key}"${i.done ? " checked" : ""}> ${i.label}</label></li>`).join("")}
-            </ul>
-          </div>
-          <div class="row">
-            <a class="btn btn--sm btn--plain" href="event.html${q}">${icon("edit")} Edit</a>
-            <a class="btn btn--sm btn--plain" href="poster.html${q}">${icon("print")} Poster</a>
-            ${rules.needsFror ? `<a class="btn btn--sm${ev.frorSent ? " btn--plain" : ""}" href="fror.html${q}">${icon("mail")} Catering email</a>` : ""}
-            <button class="btn btn--sm btn--plain" data-ics="${esc(ev.id)}">${icon("calendar")} .ics</button>
-            <a class="btn btn--sm btn--plain" href="${esc(Cal.eventGoogleLink(ev))}" target="_blank" rel="noopener">Google Cal</a>
+            <p><span class="sr-only">${esc(fmtDate(ev.date))}, </span>${esc(fmtTimeRange(ev.startTime, ev.endTime))} · ${esc(loc(ev)) || "No location yet"}</p>
           </div>
         </div>
-      </article>`;
+        <dl class="details">
+          <dt>Expected</dt><dd>${ev.attendance ? esc(ev.attendance) + " people" : "Not set"}</dd>
+          <dt>Food</dt><dd>${ev.hasFood ? esc(ev.vendor || "Yes, vendor not set") : "None"}${rules.exempt ? " (no catering email needed)" : ""}</dd>
+          <dt>Organizer</dt><dd>${esc(ev.organizerName) || "Not set"}${ev.organizerRole ? ", " + esc(ev.organizerRole) : ""}</dd>
+        </dl>
+        ${alerts.join("")}
+        <div class="status">
+          <div class="row row--between"><strong style="color: var(--web-ink)">Status</strong><span class="small muted">${done} of ${items.length} done</span></div>
+          <div class="progress" aria-hidden="true"><div style="width:${items.length ? (done / items.length) * 100 : 0}%"></div></div>
+          <ul class="checklist">
+            ${items.map((i) => `<li><label class="check"><input type="checkbox" data-id="${esc(ev.id)}" data-key="${i.key}"${i.done ? " checked" : ""}> ${i.label}</label></li>`).join("")}
+          </ul>
+        </div>
+        <div class="row">
+          <a class="btn btn--secondary btn--sm" href="event.html${q}">${icon("edit")} Edit</a>
+          <a class="btn btn--secondary btn--sm" href="poster.html${q}">${icon("print")} Poster</a>
+          ${rules.needsFror ? `<a class="btn btn--secondary btn--sm" href="fror.html${q}">${icon("mail")} Catering email</a>` : ""}
+          <button class="btn btn--ghost btn--sm" data-ics="${esc(ev.id)}">Download .ics</button>
+          <a class="btn btn--ghost btn--sm" href="${esc(Cal.eventGoogleLink(ev))}" target="_blank" rel="noopener">Google Calendar<span class="sr-only"> (opens in a new tab)</span></a>
+        </div>
+      </li>`;
   }
 
   function pastRow(ev) {
     const items = statusItems(ev);
     const done = items.filter((i) => i.done).length;
     return `<tr>
-      <td class="mono">${esc(fmtDate(ev.date, "numeric"))}</td>
+      <td>${esc(fmtDate(ev.date, "numeric"))}</td>
       <td><a href="event.html?id=${encodeURIComponent(ev.id)}">${esc(ev.title)}</a></td>
       <td>${esc(loc(ev))}</td>
       <td>${esc(ev.attendance)}</td>
-      <td>${done === items.length ? '<span class="chip chip--live">complete</span>' : `<span class="chip">${done}/${items.length}</span>`}</td>
+      <td>${done === items.length ? badge("Complete", "ink") : badge(`${done} of ${items.length}`)}</td>
     </tr>`;
   }
 
@@ -72,17 +79,20 @@
     const past = events.filter((e) => e.date < t).sort((a, b) => b.date.localeCompare(a.date));
 
     content.innerHTML = `
-      <section class="stack">
-        <div class="eyebrow">Upcoming · ${upcoming.length}</div>
-        ${upcoming.length ? `<div class="grid">${upcoming.map(eventCard).join("")}</div>`
-          : `<div class="empty">No upcoming events. <a href="event.html">Create one</a>.</div>`}
+      <section class="stack" aria-labelledby="up-h">
+        <div class="section-head">
+          <div><h2 id="up-h">Upcoming events</h2><p role="status">${upcoming.length} upcoming</p></div>
+          <button class="btn btn--secondary btn--sm" id="export">${icon("download")} Back up all data (JSON)</button>
+        </div>
+        ${upcoming.length ? `<ul class="grid" style="list-style: none; margin: 0; padding: 0">${upcoming.map(eventCard).join("")}</ul>`
+          : `<div class="empty"><p>No upcoming events. Use <strong>New event</strong> in the header to add one.</p></div>`}
       </section>
-      <section class="stack">
-        <div class="eyebrow">Past · ${past.length}</div>
+      <section class="stack" aria-labelledby="past-h">
+        <h2 id="past-h">Past events</h2>
         ${past.length ? `<div class="table-wrap"><table>
-          <thead><tr><th>Date</th><th>Event</th><th>Where</th><th>Expected</th><th>Status</th></tr></thead>
+          <thead><tr><th scope="col">Date</th><th scope="col">Event</th><th scope="col">Where</th><th scope="col">Expected</th><th scope="col">Status</th></tr></thead>
           <tbody>${past.map(pastRow).join("")}</tbody></table></div>`
-          : `<div class="empty">No past events yet.</div>`}
+          : `<div class="empty"><p>No past events yet.</p></div>`}
       </section>`;
 
     $$("input[type=checkbox][data-key]", content).forEach((cb) => {
@@ -91,8 +101,12 @@
         try {
           const saved = await Store.patch("events", cb.dataset.id, { [cb.dataset.key]: cb.checked });
           events = events.map((e) => (e.id === saved.id ? saved : e));
+          const key = cb.dataset.key, id = cb.dataset.id;
           render();
-          toast("Saved");
+          // keep keyboard focus on the box that was just toggled
+          const again = content.querySelector(`input[data-id="${CSS.escape(id)}"][data-key="${key}"]`);
+          if (again) again.focus();
+          toast("Saved.");
         } catch (e) {
           cb.checked = !cb.checked;
           cb.disabled = false;
@@ -106,14 +120,13 @@
         download(ev.id + ".ics", Cal.eventIcs(ev), "text/calendar");
       };
     });
+    $("#export").onclick = async () => {
+      try {
+        const [ev, mt] = await Promise.all([Store.list("events"), Store.list("meetings")]);
+        download(`club-backup-${today()}.json`, JSON.stringify({ exportedAt: new Date().toISOString(), events: ev, meetings: mt }, null, 2), "application/json");
+      } catch (e) { toast(e.message, "danger"); }
+    };
   }
-
-  $("#export").onclick = () =>
-    App.withData(content, async () => {
-      const [ev, mt] = await Promise.all([Store.list("events"), Store.list("meetings")]);
-      download(`club-backup-${today()}.json`, JSON.stringify({ exportedAt: new Date().toISOString(), events: ev, meetings: mt }, null, 2), "application/json");
-      render();
-    });
 
   App.withData(content, async () => {
     events = await Store.list("events");

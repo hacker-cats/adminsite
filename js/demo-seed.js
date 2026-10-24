@@ -19,7 +19,7 @@ window.DEMO_SEED = {
     {
       id: "2026-11-07-game-night",
       title: "Game Night",
-      description: "Board games, retro consoles, and pizza. Bring a friend!",
+      description: "Board games, retro consoles, and pizza. Bring a friend.",
       date: "2026-11-07", startTime: "18:00", endTime: "21:00",
       building: "Strand Union Building (SUB)", room: "235", attendance: 20,
       hasFood: true, vendor: "Pizza Campania",

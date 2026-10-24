@@ -48,7 +48,8 @@ GitHub Pages (public)             Google (private)
 | `js/store.js` | Data layer (Google Sheets or demo localStorage) |
 | `js/calendar.js` | Recurrence, `.ics`, Google Calendar links, month grid |
 | `js/common.js` | Shared helpers, nav, **catering rule checks** |
-| `css/app.css`, `css/tokens/` | Styles, built on the Hacker Cats design kit tokens |
+| `css/app.css`, `css/tokens/` | Styles, built on the Hacker Cats design kit's web tokens |
+| `js/icon-grids.js` | Pixel icons, copied from the design kit |
 
 ## Run it locally
 
@@ -131,7 +132,14 @@ Go to **semester plan** → *Recurring meetings*. Pick the day, time, room, firs
 Posters are 816 × 1056 px, which is exactly US Letter at 96 px/inch.
 
 ### Change the look of the app
-`css/app.css` builds on the design kit tokens in `css/tokens/` (copied from `../design-kit`). Brand rules: fields sink, buttons rise; sharp corners; green means state (done/live), never navigation.
+The app follows the **Web** expression of the Hacker Cats design kit (`../design-kit/readme.md`, `COMPONENTS.md`). `css/app.css` builds on the kit tokens copied into `css/tokens/` (use the `--web-*` ones). Key rules:
+- Paper background with an ink header and footer. **Brown** is the primary action, and there's one primary button per view.
+- **Yellow** is a highlight only: markers, underlines, the focus ring, and the one CTA on the ink header. Never use yellow text on paper.
+- **Green** means something is live right now. Don't use it for "done" or for navigation.
+- 4px corners, hard offset shadows on cards and primary buttons only. Hover darkens a button or adds a frame.
+- Forms validate on submit, with a note under each field and a summary at the top.
+
+Pixel icons come from `js/icon-grids.js`, a copy of the kit's `assets/icons/icons.json`. Regenerate it if the kit adds icons. Posters are print, so they use the kit's **Field Manual** look instead.
 
 ### Show the club's Google Calendar
 Set `google.calendarEmbedId` in `config.js` to a **public** Google Calendar ID. The calendar page will get a "Google Calendar" tab.

@@ -1,3 +1,4 @@
+/* Field Manual (print & merch) tokens. Web work uses tokens/web.css. */
 :root {
   /* ---- base palette: yellow, brown, green ---- */
   --hc-ground: oklch(0.735 0.048 80);   /* #C2A97F universal khaki */

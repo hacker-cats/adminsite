@@ -1,0 +1,55 @@
+/* Web tokens — the website and every React component use these.
+   Field Manual tokens (colors.css, depth.css, texture.css) are kept for print & merch. */
+:root {
+  --web-paper: #F5F0E6;          /* page ground */
+  --web-surface: #FFFCF6;        /* cards, forms */
+  --web-sunk: #EFE7D8;           /* bands, neutral chips, disabled */
+  --web-field: #FFFFFF;          /* text inputs */
+  --web-line: #D9CCB4;           /* hairlines, card borders */
+  --web-line-strong: #B9A685;    /* dashed / quiet frames */
+  --web-control: #8C7556;        /* input + checkbox borders (3:1 on paper) */
+  --web-ink: #2F2114;            /* headings, dark chrome */
+  --web-text: #4A3826;           /* body copy */
+  --web-muted: #5C4632;          /* secondary copy, 6:1 on paper */
+  --web-brown: #5A3E22;          /* primary action */
+  --web-brown-hover: #4A321B;
+  --web-khaki: #C2A97F;          /* bold section band (ink text only) */
+  --web-on-ink: #F5F0E6;
+  --web-on-ink-muted: #DCD0B4;
+  --web-ink-rule: #5A4532;
+
+  --web-yellow: #E4B33A;         /* highlight only: underline, marker, focus ring, CTA on ink */
+  --web-yellow-tint: #FAF0D2;
+  --web-yellow-text: #6B4A0E;
+  --web-green: #2E7F46;          /* live state only */
+  --web-green-tint: #E3EFE3;
+  --web-green-text: #1F5A31;
+  --web-red: #9E3B22;            /* danger, validation */
+  --web-red-tint: #F7E6DF;
+  --web-red-text: #8A3019;
+
+  --web-radius: 4px;
+  --web-shadow-card: 3px 3px 0 var(--web-line);
+  --web-shadow-button: 2px 2px 0 var(--web-ink);
+  --web-focus-outline: 3px solid var(--web-ink);
+  --web-focus-ring: 0 0 0 3px var(--web-yellow);
+
+  --web-font: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --web-font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;  /* wordmark + code only */
+  --web-size-display: clamp(38px, 5.2vw, 62px);
+  --web-size-h1: clamp(34px, 4.4vw, 52px);
+  --web-size-h2: clamp(26px, 3vw, 34px);
+  --web-size-h3: 20px;
+  --web-size-lead: 18px;
+  --web-size-body: 16px;
+  --web-size-small: 14px;
+  --web-leading: 1.6;
+  --web-measure: 62ch;
+
+  --web-page-max: 1200px;
+  --web-pad-x: clamp(20px, 4vw, 48px);
+  --web-section-y: clamp(48px, 6vw, 80px);
+  --web-hit: 44px;
+  --web-control-h: 46px;
+  --web-ease: cubic-bezier(.2, .8, .3, 1);
+}

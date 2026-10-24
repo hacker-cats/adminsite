@@ -1,3 +1,4 @@
+/* Field Manual (print & merch) tokens. Web work uses tokens/web.css. */
 :root {
   /* Texture is the light-shade block character, one value step off its own fill.
      Buttons, toggles and hazard rails only — never behind text a user types. */

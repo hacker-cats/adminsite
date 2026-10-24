@@ -3,60 +3,94 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Club Admin — Semester Plan</title>
+  <title>Semester plan · hackercats club admin</title>
   <link rel="icon" href="assets/icons/cat.svg">
   <link rel="stylesheet" href="css/app.css">
-  <style>
-    .plan td:first-child { font-family: var(--font-mono); font-weight: 700; white-space: nowrap; }
-    .plan td:nth-child(2) { font-family: var(--font-mono); white-space: nowrap; }
-    .plan ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
-    .plan s { color: var(--text-muted); }
-    .flag { display: block; font-size: var(--size-body-sm); }
-    .flag--warn { color: var(--hc-oxide-quiet); font-weight: 600; }
-    .flag--caution { color: var(--hc-caution-quiet); font-weight: 600; }
-  </style>
 </head>
 <body>
-  <main class="page">
-    <header class="head">
-      <div>
-        <div class="eyebrow">Club admin · planning</div>
-        <h1>&gt;_ semester plan</h1>
+  <main id="main" tabindex="-1">
+    <div class="page-head">
+      <div class="wrap">
+        <p class="eyebrow">Planning</p>
+        <h1>Semester plan</h1>
+        <p class="lede">Week by week: meetings, events, breaks and anything that needs attention. Semester and break dates live in config.js.</p>
       </div>
-      <p class="lead">Week by week: recurring meetings, events, breaks, and anything that needs attention. Semester and break dates live in <code>config.js</code>.</p>
-    </header>
-    <div id="content" class="stack"><div class="empty">Loading…</div></div>
+    </div>
+    <div class="wrap page" id="content"><p class="muted">Loading…</p></div>
   </main>
 
   <template id="meeting-form-template">
-    <form id="meeting-form" class="stack" novalidate>
+    <form id="meeting-form" class="stack" style="gap: 20px" novalidate>
+      <div id="meeting-errors"></div>
       <input type="hidden" name="id">
       <div class="form-grid">
-        <label class="field span-all"><span>Title *</span><input name="title" required placeholder="Weekly meeting"></label>
-        <label class="field"><span>Day *</span><select name="weekday" required></select></label>
-        <label class="field"><span>Repeats</span>
-          <select name="frequency"><option value="weekly">Every week</option><option value="biweekly">Every other week</option></select>
-        </label>
-        <label class="field"><span>Start time *</span><input type="time" name="startTime" required></label>
-        <label class="field"><span>End time *</span><input type="time" name="endTime" required></label>
-        <label class="field"><span>Building</span><input name="building" list="buildings"></label>
-        <label class="field"><span>Room</span><input name="room"></label>
-        <label class="field"><span>First date *</span><input type="date" name="firstDate" required></label>
-        <label class="field"><span>Last date *</span><input type="date" name="lastDate" required></label>
-        <label class="field span-all"><span>Skip dates</span><input name="skipDates" placeholder="2026-10-15, 2026-11-12">
-          <small>Comma-separated. Breaks from config.js are skipped automatically.</small></label>
-        <label class="field span-all"><span>Notes</span><input name="notes"></label>
+          <div class="field span-all">
+            <div class="field__top"><label for="m-title">Title</label><span class="field__hint">Required</span></div>
+            <input id="m-title" name="title" type="text" aria-describedby="m-title-note" placeholder="Weekly meeting">
+            <p class="field__note" id="m-title-note" hidden></p>
+          </div>
+          <div class="field">
+            <div class="field__top"><label for="m-weekday">Day</label><span class="field__hint">Required</span></div>
+            <select id="m-weekday" name="weekday" aria-describedby="m-weekday-note"></select>
+            <p class="field__note" id="m-weekday-note" hidden></p>
+          </div>
+          <div class="field">
+            <div class="field__top"><label for="m-frequency">Repeats</label><span class="field__hint">Required</span></div>
+            <select id="m-frequency" name="frequency" aria-describedby="m-frequency-note"><option value="weekly">Every week</option><option value="biweekly">Every other week</option></select>
+            <p class="field__note" id="m-frequency-note" hidden></p>
+          </div>
+          <div class="field">
+            <div class="field__top"><label for="m-startTime">Start time</label><span class="field__hint">Required</span></div>
+            <input id="m-startTime" name="startTime" type="time" aria-describedby="m-startTime-note">
+            <p class="field__note" id="m-startTime-note" hidden></p>
+          </div>
+          <div class="field">
+            <div class="field__top"><label for="m-endTime">End time</label><span class="field__hint">Required</span></div>
+            <input id="m-endTime" name="endTime" type="time" aria-describedby="m-endTime-note">
+            <p class="field__note" id="m-endTime-note" hidden></p>
+          </div>
+          <div class="field">
+            <div class="field__top"><label for="m-building">Building</label><span class="field__hint">Optional</span></div>
+            <input id="m-building" name="building" type="text" aria-describedby="m-building-note" list="buildings">
+            <p class="field__note" id="m-building-note" hidden></p>
+          </div>
+          <div class="field">
+            <div class="field__top"><label for="m-room">Room</label><span class="field__hint">Optional</span></div>
+            <input id="m-room" name="room" type="text" aria-describedby="m-room-note">
+            <p class="field__note" id="m-room-note" hidden></p>
+          </div>
+          <div class="field">
+            <div class="field__top"><label for="m-firstDate">First date</label><span class="field__hint">Required</span></div>
+            <input id="m-firstDate" name="firstDate" type="date" aria-describedby="m-firstDate-note">
+            <p class="field__note" id="m-firstDate-note" hidden></p>
+          </div>
+          <div class="field">
+            <div class="field__top"><label for="m-lastDate">Last date</label><span class="field__hint">Required</span></div>
+            <input id="m-lastDate" name="lastDate" type="date" aria-describedby="m-lastDate-note">
+            <p class="field__note" id="m-lastDate-note" hidden></p>
+          </div>
+          <div class="field span-all">
+            <div class="field__top"><label for="m-skipDates">Skip dates</label><span class="field__hint">Optional</span></div>
+            <input id="m-skipDates" name="skipDates" type="text" aria-describedby="m-skipDates-note" placeholder="2026-10-15, 2026-11-12">
+            <p class="field__note" id="m-skipDates-note">Comma-separated, as YYYY-MM-DD. Breaks from config.js are skipped automatically.</p>
+          </div>
+          <div class="field span-all">
+            <div class="field__top"><label for="m-notes">Notes</label><span class="field__hint">Optional</span></div>
+            <input id="m-notes" name="notes" type="text" aria-describedby="m-notes-note">
+            <p class="field__note" id="m-notes-note" hidden></p>
+          </div>
       </div>
       <datalist id="buildings"></datalist>
       <div class="row">
-        <button class="btn" type="submit"><img src="assets/icons/check.svg" alt=""> Save meeting</button>
-        <button class="btn btn--plain" type="button" id="meeting-cancel">Clear</button>
+        <button class="btn" type="submit">Save meeting</button>
+        <button class="btn btn--ghost" type="button" id="meeting-cancel">Clear form</button>
       </div>
     </form>
   </template>
 
   <script src="config.js"></script>
   <script src="js/demo-seed.js"></script>
+  <script src="js/icon-grids.js"></script>
   <script src="js/store.js"></script>
   <script src="js/common.js"></script>
   <script src="js/calendar.js"></script>

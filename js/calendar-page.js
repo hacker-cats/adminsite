@@ -26,12 +26,12 @@
   function meetingRow(m) {
     const g = Cal.meetingGoogleLink(m);
     return `<tr>
-      <td><strong>${esc(m.title)}</strong><br><span class="muted">${esc(loc(m))}</span></td>
+      <td><strong style="color: var(--web-ink)">${esc(m.title)}</strong><br><span class="muted">${esc(loc(m))}</span></td>
       <td>${m.frequency === "biweekly" ? "Every other" : "Every"} ${esc(DOW[m.weekday])}<br>${esc(fmtTimeRange(m.startTime, m.endTime))}</td>
-      <td class="mono">${esc(fmtDate(m.firstDate, "numeric"))} – ${esc(fmtDate(m.lastDate, "numeric"))}</td>
-      <td><div class="row">
-        <button class="btn btn--sm btn--plain" data-mics="${esc(m.id)}">${icon("calendar")} .ics</button>
-        ${g ? `<a class="btn btn--sm btn--plain" target="_blank" rel="noopener" href="${esc(g)}" title="Google's link can't skip break days; use the .ics for exact dates">Google Cal</a>` : ""}
+      <td>${esc(fmtDate(m.firstDate, "numeric"))} to ${esc(fmtDate(m.lastDate, "numeric"))}</td>
+      <td><div class="row" style="gap: 8px">
+        <button class="btn btn--secondary btn--sm" data-mics="${esc(m.id)}">Download .ics</button>
+        ${g ? `<a class="btn btn--ghost btn--sm" target="_blank" rel="noopener" href="${esc(g)}">Google Calendar<span class="sr-only"> (opens in a new tab)</span></a>` : ""}
       </div></td>
     </tr>`;
   }
@@ -40,43 +40,45 @@
     const t = today();
     const upcoming = events.filter((e) => e.date >= t);
     content.innerHTML = `
-      ${embedId ? `<div class="tabs" role="tablist">
-        <button role="tab" aria-selected="true" data-tab="month">Month</button>
-        <button role="tab" aria-selected="false" data-tab="google">Google Calendar</button>
+      ${embedId ? `<div class="segmented" role="group" aria-label="Calendar view">
+        <button type="button" aria-pressed="true" data-view="month">Month</button>
+        <button type="button" aria-pressed="false" data-view="google">Club Google Calendar</button>
       </div>` : ""}
-      <div id="tab-month" class="stack">
+      <div id="view-month" class="stack">
         <div id="month"></div>
         <div class="legend">
-          <span class="cal__item cal__item--event">event</span>
-          <span class="cal__item cal__item--meeting">meeting</span>
-          <span class="cal__item cal__item--break">break / no class</span>
-          <a href="plan.html">Edit meetings &amp; semester dates →</a>
+          <span class="cal__item cal__item--event">Event</span>
+          <span class="cal__item cal__item--meeting">Meeting</span>
+          <span class="cal__item cal__item--break">Break, no meetings</span>
+          <a href="plan.html">Edit meetings and semester dates</a>
         </div>
       </div>
-      ${embedId ? `<div id="tab-google" class="hidden">
-        <iframe title="Club Google Calendar" style="width:100%;height:min(72vh,620px);border:2px solid var(--border-strong);background:var(--surface-page)"
-          src="https://calendar.google.com/calendar/embed?mode=MONTH&showTitle=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0&bgcolor=%23C2A97F&ctz=${encodeURIComponent(CONFIG.club.timeZone)}&src=${encodeURIComponent(embedId)}"></iframe>
+      ${embedId ? `<div id="view-google" class="hidden">
+        <iframe title="Club Google Calendar" style="width:100%;height:min(72vh,620px);border:1px solid var(--web-line);border-radius:var(--web-radius);background:var(--web-surface)"
+          src="https://calendar.google.com/calendar/embed?mode=MONTH&showTitle=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0&bgcolor=%23FFFCF6&ctz=${encodeURIComponent(CONFIG.club.timeZone)}&src=${encodeURIComponent(embedId)}"></iframe>
       </div>` : ""}
 
-      <section class="card">
-        <div class="card__bar"><span>Add to your calendar</span>${icon("calendar")}</div>
-        <div class="card__body">
-          <div class="row">
-            <button class="btn" id="all-ics">${icon("download")} Everything upcoming (.ics)</button>
-            <span class="muted">One file with all ${upcoming.length} upcoming events and ${meetings.length} recurring meeting series. Import it into Google Calendar, Outlook, or Apple Calendar.</span>
+      <section class="stack" aria-labelledby="add-h">
+        <div class="section-head">
+          <div>
+            <h2 id="add-h">Add to your calendar</h2>
+            <p>One file with all ${upcoming.length} upcoming events and ${meetings.length} recurring meetings. Import it into Google Calendar, Outlook or Apple Calendar.</p>
           </div>
-          ${meetings.length ? `<div class="table-wrap"><table>
-            <thead><tr><th>Meeting</th><th>When</th><th>Dates</th><th></th></tr></thead>
-            <tbody>${meetings.map(meetingRow).join("")}</tbody></table></div>`
-            : `<div class="empty">No recurring meetings yet. <a href="plan.html#meetings">Add one</a>.</div>`}
+          <button class="btn" id="all-ics">${icon("download", "onDark")} Download everything (.ics)</button>
         </div>
+        ${meetings.length ? `<div class="table-wrap"><table>
+          <caption class="sr-only">Recurring meetings</caption>
+          <thead><tr><th scope="col">Meeting</th><th scope="col">When</th><th scope="col">Dates</th><th scope="col"><span class="sr-only">Actions</span></th></tr></thead>
+          <tbody>${meetings.map(meetingRow).join("")}</tbody></table></div>
+          <p class="small muted">Google Calendar links can't skip break days. The .ics files skip them.</p>`
+          : `<div class="empty"><p>No recurring meetings yet. <a href="plan.html#meetings">Add one</a>.</p></div>`}
       </section>`;
 
     drawMonth();
-    $$("[data-tab]").forEach((b) => (b.onclick = () => {
-      $$("[data-tab]").forEach((x) => x.setAttribute("aria-selected", String(x === b)));
-      $("#tab-month").classList.toggle("hidden", b.dataset.tab !== "month");
-      $("#tab-google").classList.toggle("hidden", b.dataset.tab !== "google");
+    $$("[data-view]").forEach((b) => (b.onclick = () => {
+      $$("[data-view]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+      $("#view-month").classList.toggle("hidden", b.dataset.view !== "month");
+      $("#view-google").classList.toggle("hidden", b.dataset.view !== "google");
     }));
     $$("[data-mics]").forEach((b) => (b.onclick = () => {
       const m = meetings.find((x) => x.id === b.dataset.mics);

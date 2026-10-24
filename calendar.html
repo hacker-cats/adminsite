@@ -3,24 +3,25 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Club Admin — Calendar</title>
+  <title>Calendar · hackercats club admin</title>
   <link rel="icon" href="assets/icons/cat.svg">
   <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
-  <main class="page">
-    <header class="head">
-      <div>
-        <div class="eyebrow">Club admin · calendar</div>
-        <h1>&gt;_ calendar</h1>
+  <main id="main" tabindex="-1">
+    <div class="page-head">
+      <div class="wrap">
+        <p class="eyebrow">Calendar</p>
+        <h1>Calendar</h1>
+        <p class="lede">Events, recurring meetings and breaks in one month view. Select an event to edit it.</p>
       </div>
-      <p class="lead">Events, recurring meetings, and semester breaks in one month view. Click an event to edit it.</p>
-    </header>
-    <div id="content" class="stack"><div class="empty">Loading…</div></div>
+    </div>
+    <div class="wrap page" id="content"><p class="muted">Loading…</p></div>
   </main>
 
   <script src="config.js"></script>
   <script src="js/demo-seed.js"></script>
+  <script src="js/icon-grids.js"></script>
   <script src="js/store.js"></script>
   <script src="js/common.js"></script>
   <script src="js/calendar.js"></script>

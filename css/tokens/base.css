@@ -1,18 +1,16 @@
+/* Web base. Print/merch pieces set their own ground (--hc-ground) and radius 0. */
 body {
   margin: 0;
-  background: var(--surface-page);
-  color: var(--text-body);
-  font-family: var(--font-body);
-  font-size: var(--size-body);
-  line-height: var(--leading-body);
+  background: var(--web-paper);
+  color: var(--web-text);
+  font-family: var(--web-font);
+  font-size: var(--web-size-body);
+  line-height: var(--web-leading);
   -webkit-font-smoothing: antialiased;
 }
-
-a {
-  color: var(--hc-live-quiet);
-  text-decoration-thickness: 2px;
-  text-underline-offset: 2px;
-}
-a:hover { color: oklch(0.26 0.075 150); }
-
-*, *::before, *::after { box-sizing: border-box; border-radius: var(--radius); }
+a { color: var(--web-brown); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+a:hover { color: var(--web-ink); }
+:focus-visible { outline: var(--web-focus-outline); outline-offset: 2px; }
+*, *::before, *::after { box-sizing: border-box; }
+@keyframes hcPulse { 0%, 55% { opacity: 1; } 56%, 100% { opacity: 0.2; } }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
