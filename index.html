@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Club Admin — Dashboard</title>
+  <link rel="icon" href="assets/icons/cat.svg">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <main class="page">
+    <header class="head">
+      <div>
+        <div class="eyebrow">Club admin · events</div>
+        <h1>&gt;_ dashboard</h1>
+      </div>
+      <div class="row">
+        <a class="btn" href="event.html"><img src="assets/icons/plus.svg" alt=""> New event</a>
+        <button class="btn btn--plain" id="export"><img src="assets/icons/download.svg" alt=""> Backup (JSON)</button>
+      </div>
+    </header>
+    <div id="content" class="stack"><div class="empty">Loading…</div></div>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="js/demo-seed.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/calendar.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

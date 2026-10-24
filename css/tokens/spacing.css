@@ -1,0 +1,26 @@
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --space-8: 40px;
+  --space-9: 56px;
+
+  --pad-control-y: 12px;   /* fields */
+  --pad-control-x: 14px;
+  --pad-button-y: 14px;    /* buttons sit a touch taller than fields */
+  --pad-button-x: 22px;
+  --pad-card: 24px;
+  --pad-page-x: clamp(16px, 4vw, 64px);
+  --pad-page-y: clamp(24px, 4vw, 56px);
+
+  --gap-stack: clamp(26px, 3.5vw, 42px);
+  --page-max: 1280px;
+  --sidebar-w: 240px;
+
+  --radius: 0;              /* sharp corners, always */
+  --hit-min: 44px;
+}

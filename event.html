@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Club Admin — Event</title>
+  <link rel="icon" href="assets/icons/cat.svg">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <main class="page">
+    <header class="head">
+      <div>
+        <div class="eyebrow">Club admin · events</div>
+        <h1 id="page-title">&gt;_ new event</h1>
+      </div>
+      <p class="lead">Saved to the club spreadsheet. Unsaved changes are kept as a draft in this browser, so you won't lose work if you close the tab.</p>
+    </header>
+    <div id="content" class="stack"><div class="empty">Loading…</div></div>
+  </main>
+
+  <!-- The form markup lives in a <template> so it's easy to read and edit. -->
+  <template id="form-template">
+    <div id="draft-note"></div>
+    <form id="event-form" class="stack" novalidate>
+      <fieldset>
+        <legend>Event</legend>
+        <div class="form-grid">
+          <label class="field span-all"><span>Title *</span><input name="title" required placeholder="Game Night"></label>
+          <label class="field span-all"><span>Description</span><textarea name="description" rows="3" placeholder="What's happening, who it's for…"></textarea></label>
+          <label class="field"><span>Date *</span><input type="date" name="date" required></label>
+          <label class="field"><span>Start time *</span><input type="time" name="startTime" required></label>
+          <label class="field"><span>End time *</span><input type="time" name="endTime" required></label>
+          <label class="field"><span>Building *</span><input name="building" list="buildings" required placeholder="Barnard Hall"></label>
+          <label class="field"><span>Room</span><input name="room" placeholder="108"></label>
+          <label class="field"><span>Expected attendance *</span><input type="number" name="attendance" min="1" required placeholder="20"></label>
+        </div>
+        <datalist id="buildings"></datalist>
+      </fieldset>
+
+      <fieldset>
+        <legend>Food</legend>
+        <div class="row">
+          <label class="check"><input type="radio" name="hasFood" value="no" checked> No food</label>
+          <label class="check"><input type="radio" name="hasFood" value="yes"> Yes, we're serving food</label>
+        </div>
+        <label class="field" id="vendor-field"><span>Vendor</span><input name="vendor" placeholder="e.g. Pizza Campania, Firehouse Subs"></label>
+        <div id="rules" class="stack" style="gap: var(--space-2)"></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Organizer</legend>
+        <div class="form-grid">
+          <label class="field"><span>Name *</span><input name="organizerName" required autocomplete="name"></label>
+          <label class="field"><span>Role</span><input name="organizerRole" placeholder="President"></label>
+          <label class="field"><span>Phone</span><input type="tel" name="organizerPhone" autocomplete="tel"></label>
+          <label class="field"><span>Email *</span><input type="email" name="organizerEmail" required autocomplete="email" placeholder="you@student.montana.edu"></label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Status</legend>
+        <div class="row">
+          <label class="check"><input type="checkbox" name="posterMade"> Poster made</label>
+          <label class="check"><input type="checkbox" name="frorSent"> FRoR email sent</label>
+          <label class="check"><input type="checkbox" name="approvalReceived"> Approval received</label>
+          <label class="check"><input type="checkbox" name="foodOrdered"> Food ordered</label>
+        </div>
+        <label class="field"><span>Notes</span><textarea name="notes" rows="2"></textarea></label>
+      </fieldset>
+
+      <div class="row">
+        <button class="btn" type="submit"><img src="assets/icons/check.svg" alt=""> Save event</button>
+        <button class="btn btn--plain" type="button" id="download-json"><img src="assets/icons/download.svg" alt=""> Download JSON</button>
+        <a class="btn btn--plain" href="index.html">Cancel</a>
+        <button class="btn btn--danger hidden" type="button" id="delete"><img src="assets/icons/trash.svg" alt=""> Delete</button>
+      </div>
+    </form>
+  </template>
+
+  <script src="config.js"></script>
+  <script src="js/demo-seed.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/calendar.js"></script>
+  <script src="js/event-form.js"></script>
+</body>
+</html>

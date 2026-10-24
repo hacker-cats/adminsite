@@ -1,0 +1,7 @@
+:root {
+  /* Texture is the light-shade block character, one value step off its own fill.
+     Buttons, toggles and hazard rails only — never behind text a user types. */
+  --texture-char: "\2591";
+  --texture-size: 28px;
+  --texture-line: 32px;
+}

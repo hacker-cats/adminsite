@@ -1,0 +1,18 @@
+:root {
+  /* One rule: fields sink, buttons rise. */
+  --frame: 2px;
+  --frame-thick: 3px;
+
+  --well-inset: 3px;
+  --well-shadow: inset var(--well-inset) var(--well-inset) 0 var(--hc-well-shade);
+
+  --lift: 6px;              /* button drop distance */
+  --lift-press: 2px;        /* drop remaining while pressed */
+  --lift-travel: 4px;       /* how far the face moves on press */
+  --bevel: 3px;
+
+  --ease-snap: cubic-bezier(.2, .8, .3, 1);
+  --dur-press: 90ms;
+  --dur-control: 120ms;
+  --dur-slide: 180ms;
+}

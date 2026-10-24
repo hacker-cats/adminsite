@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Club Admin — Poster</title>
+  <link rel="icon" href="assets/icons/cat.svg">
+  <link rel="stylesheet" href="css/app.css">
+  <link rel="stylesheet" href="css/posters.css">
+  <style>
+    .poster-layout { display: grid; gap: var(--space-6); grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); align-items: start; }
+    .poster-stage { border: var(--frame) solid var(--border-strong); background: var(--hc-ink); padding: var(--space-4); overflow: hidden; }
+    .poster-stage__inner { transform-origin: top left; }
+    .tpl-pick { display: grid; gap: var(--space-2); grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); }
+    .tpl-pick label { border: var(--frame) solid var(--border-strong); background: var(--surface-field); padding: var(--space-2) var(--space-3); display: flex; gap: var(--space-2); align-items: center; cursor: pointer; font-size: var(--size-body-sm); }
+    .tpl-pick label:has(input:checked) { background: var(--hc-signal); }
+    /* Full-size copy used for PNG/PDF export and printing; kept off-screen. */
+    #poster-export { position: fixed; left: -10000px; top: 0; }
+    @media print {
+      @page { size: letter; margin: 0; }
+      body > *:not(#poster-export) { display: none !important; }
+      #poster-export { position: static; }
+      .poster { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page no-print">
+    <header class="head">
+      <div>
+        <div class="eyebrow">Club admin · poster</div>
+        <h1>&gt;_ poster</h1>
+      </div>
+      <p class="lead">Pick an event and a template, then download a PNG or a print-ready letter-size PDF. Everything runs in your browser.</p>
+    </header>
+    <div id="content"><div class="empty">Loading…</div></div>
+  </main>
+  <div id="poster-export" aria-hidden="true"></div>
+
+  <!-- PNG/PDF export libraries, pinned to exact versions. -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"
+          integrity="sha384-ZZ1pncU3bQe8y31yfZdMFdSpttDoPmOZg2wguVK9almUodir1PghgT0eY7Mrty8H" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"
+          integrity="sha384-JcnsjUPPylna1s1fvi1u12X5qjY5OL56iySh75FdtrwhO/SWXgMjoVqcKyIIWOLk" crossorigin="anonymous"></script>
+  <script src="config.js"></script>
+  <script src="js/demo-seed.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/poster-templates.js"></script>
+  <script src="js/poster.js"></script>
+</body>
+</html>

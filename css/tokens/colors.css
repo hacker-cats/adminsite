@@ -1,0 +1,61 @@
+:root {
+  /* ---- base palette: yellow, brown, green ---- */
+  --hc-ground: oklch(0.735 0.048 80);   /* #C2A97F universal khaki */
+  --hc-raised: oklch(0.80 0.04 84);     /* #D5C4A4 lifted surface */
+  --hc-field:  oklch(0.86 0.035 86);    /* #DCD0B4 input well */
+  --hc-line:   oklch(0.56 0.05 72);     /* #9C8B6E hairline / muted frame */
+  --hc-tan:    oklch(0.50 0.09 60);     /* #7B5029 mid brown */
+  --hc-ink:    oklch(0.26 0.04 58);     /* #2F2114 text, frames, dark surface */
+  --hc-ink-deep: oklch(0.24 0.04 58);   /* label ink on yellow */
+  --hc-cream:  oklch(0.95 0.02 88);     /* #F2EFE6 light label */
+
+  --hc-signal: oklch(0.83 0.15 89);     /* #E4B33A brand yellow */
+  --hc-signal-hi: oklch(0.94 0.06 92);  /* bevel highlight */
+  --hc-signal-lo: oklch(0.62 0.11 86);  /* bevel shade */
+  --hc-signal-tex: oklch(0.695 0.145 88); /* block texture on yellow */
+
+  --hc-live:   oklch(0.45 0.10 150);    /* #2E7F46 state green */
+  --hc-live-hi: oklch(0.56 0.11 150);
+  --hc-live-lo: oklch(0.34 0.08 150);
+  --hc-live-tex: oklch(0.345 0.09 150);
+  --hc-live-quiet: oklch(0.32 0.075 150); /* green text on ground, 4.6:1 */
+
+  --hc-oxide:  oklch(0.47 0.16 32);     /* #9E3B22 danger */
+  --hc-oxide-hi: oklch(0.58 0.17 34);
+  --hc-oxide-lo: oklch(0.34 0.13 30);
+  --hc-oxide-tex: oklch(0.375 0.15 32);
+  --hc-oxide-quiet: oklch(0.36 0.15 32); /* danger text on ground */
+
+  --hc-caution-quiet: oklch(0.36 0.09 62); /* warning text on ground */
+
+  --hc-ink-tex: oklch(0.405 0.055 58);  /* block texture on ink */
+  --hc-ground-tex: oklch(0.672 0.045 78); /* block texture on ground */
+  --hc-well-shade: oklch(0.665 0.04 80); /* inset shade inside a field */
+  --hc-ground-drop: oklch(0.60 0.05 74); /* drop shadow for ground-colored chrome */
+
+  /* ---- semantic aliases ---- */
+  --surface-page: var(--hc-ground);
+  --surface-card: var(--hc-raised);
+  --surface-dark: var(--hc-ink);
+  --surface-field: var(--hc-field);
+
+  --text-body: var(--hc-ink);
+  --text-muted: oklch(0.38 0.04 60);
+  --text-placeholder: oklch(0.46 0.04 62);
+  --text-on-dark: oklch(0.84 0.03 84);
+  --text-on-signal: var(--hc-ink-deep);
+  --text-on-oxide: oklch(0.97 0.02 60);
+  --text-on-live: var(--hc-cream);
+  --text-accent: var(--hc-signal);
+
+  --border-strong: var(--hc-ink);
+  --border-quiet: var(--hc-line);
+  --border-danger: var(--hc-oxide);
+  --border-caution: oklch(0.52 0.11 70);
+  --border-success: var(--hc-live);
+
+  --action-primary: var(--hc-signal);
+  --action-secondary: var(--hc-ink);
+  --action-danger: var(--hc-oxide);
+  --state-live: var(--hc-live);
+}

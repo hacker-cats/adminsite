@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Club Admin — Semester Plan</title>
+  <link rel="icon" href="assets/icons/cat.svg">
+  <link rel="stylesheet" href="css/app.css">
+  <style>
+    .plan td:first-child { font-family: var(--font-mono); font-weight: 700; white-space: nowrap; }
+    .plan td:nth-child(2) { font-family: var(--font-mono); white-space: nowrap; }
+    .plan ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+    .plan s { color: var(--text-muted); }
+    .flag { display: block; font-size: var(--size-body-sm); }
+    .flag--warn { color: var(--hc-oxide-quiet); font-weight: 600; }
+    .flag--caution { color: var(--hc-caution-quiet); font-weight: 600; }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="head">
+      <div>
+        <div class="eyebrow">Club admin · planning</div>
+        <h1>&gt;_ semester plan</h1>
+      </div>
+      <p class="lead">Week by week: recurring meetings, events, breaks, and anything that needs attention. Semester and break dates live in <code>config.js</code>.</p>
+    </header>
+    <div id="content" class="stack"><div class="empty">Loading…</div></div>
+  </main>
+
+  <template id="meeting-form-template">
+    <form id="meeting-form" class="stack" novalidate>
+      <input type="hidden" name="id">
+      <div class="form-grid">
+        <label class="field span-all"><span>Title *</span><input name="title" required placeholder="Weekly meeting"></label>
+        <label class="field"><span>Day *</span><select name="weekday" required></select></label>
+        <label class="field"><span>Repeats</span>
+          <select name="frequency"><option value="weekly">Every week</option><option value="biweekly">Every other week</option></select>
+        </label>
+        <label class="field"><span>Start time *</span><input type="time" name="startTime" required></label>
+        <label class="field"><span>End time *</span><input type="time" name="endTime" required></label>
+        <label class="field"><span>Building</span><input name="building" list="buildings"></label>
+        <label class="field"><span>Room</span><input name="room"></label>
+        <label class="field"><span>First date *</span><input type="date" name="firstDate" required></label>
+        <label class="field"><span>Last date *</span><input type="date" name="lastDate" required></label>
+        <label class="field span-all"><span>Skip dates</span><input name="skipDates" placeholder="2026-10-15, 2026-11-12">
+          <small>Comma-separated. Breaks from config.js are skipped automatically.</small></label>
+        <label class="field span-all"><span>Notes</span><input name="notes"></label>
+      </div>
+      <datalist id="buildings"></datalist>
+      <div class="row">
+        <button class="btn" type="submit"><img src="assets/icons/check.svg" alt=""> Save meeting</button>
+        <button class="btn btn--plain" type="button" id="meeting-cancel">Clear</button>
+      </div>
+    </form>
+  </template>
+
+  <script src="config.js"></script>
+  <script src="js/demo-seed.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/calendar.js"></script>
+  <script src="js/plan.js"></script>
+</body>
+</html>
